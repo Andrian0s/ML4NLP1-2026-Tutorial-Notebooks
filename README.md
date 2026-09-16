@@ -1,12 +1,12 @@
-# ML4NLP1-2025-Tutorial-Notebooks
-Practical Tutorials for the [Machine Learning for Natural Language Processing 1](https://studentservices.uzh.ch/uzh/launchpad/?sap-language=DE&sap-ui-language=DE#ZVVZ-display?Id=50941599&ObjectType=SM&PiqSession=003&PiqYear=2025&sap-app-origin-hint=&/details/2025/003/SM/50941599//undefined//undefined//undefined//undefined) Lecture at the University of Zurich for the Fall Semester 2025.
+# ML4NLP1-2026-Tutorial-Notebooks
+Practical Tutorials for the [Machine Learning for Natural Language Processing 1](https://studentservices.uzh.ch/uzh/launchpad/#ZVVZ-display?Id=50941599&ObjectType=SM&PiqSession=003&PiqYear=2026&sap-app-origin-hint=&/details/2026/003/SM/50941599) Lecture at the University of Zurich for the Fall Semester 2026.
 
 ## Overview
 In this repository, you will find the notebooks for the tutorials and exercises for the course. The tutorials are designed to help you understand and put into practice the theoretical concepts discussed in the lecture. Tutorials are designed to be interactive, and you are encouraged to experiment with the code and try different variations to understand the concepts better.
 
 - [exercises](./exercises): Contains the given code samples for completing the exercises.
 
-- [tutorials_notebooks_in_class](./tutorials_notebooks_in_class_2025): Contains the given code samples presented within the tutorials.
+- [tutorials_notebooks_in_class](./tutorials_notebooks_in_class_2026): Contains the given code samples presented within the tutorials.
 
 - [lecture_supplementaryl_code_samples](./lectures_supplementary_code_samples): Contains the code sample presented or given within the lecture.
 
