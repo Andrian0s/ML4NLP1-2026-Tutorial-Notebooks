@@ -63,8 +63,10 @@ autodiff-visualizer/
   - Nodes use prefixed opaque identifiers (`out_target`, `op_1`, `inp_1_x`, `der_op_1_inp_1_0`) to prevent graph merging when variable names match intermediate names (e.g. `b`, `c`, `out`).
 - **1:1 Discrete Edge Statements & LinkStyle Counting**:
   - Multi-hop edges are split into distinct lines, ensuring Mermaid's link index matches `linkStyle` statements with zero index drift.
-- **Bounded Request Caching (`prune_cache`)**:
-  - Generated SVG/PNG assets are stored with unique request UUIDs in a pooled cache directory, with automated pruning by age ($> 1$ hour) and file count ($\le 60$).
+- **Bounded Request Caching (`prune_cache`) & Multi-Format Exports**:
+  - Generated PDF, PNG, and SVG assets are stored with unique request UUIDs in a pooled cache directory, with automated pruning by age ($> 1$ hour) and file count ($\le 60$).
+  - The web UI displays the diagram via high-resolution raster PNG embedded in a responsive HTML container for 100% cross-platform rendering fidelity (eliminating browser-dependent SVG font measurement and clipping quirks).
+  - Offers direct downloads for **PDF** (native vector for slides/Beamer/print with Pillow fallback), **PNG** (raster), and **SVG** (vector).
 
 ---
 
