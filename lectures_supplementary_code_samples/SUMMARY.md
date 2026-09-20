@@ -27,15 +27,15 @@ When an input influences the output through more than one path—as $x$ does in 
 
 | Element | Mermaid Shape | Color Scheme | Meaning |
 | :--- | :--- | :--- | :--- |
-| **Output Subgraph** | Rounded Box | Pale Green (`#e6ffee`) | Header summarizes target equation `Output: out = <formula>` |
-| **Operation Subgraph** | Large Subgraph | Pale Yellow (`#fff2cc`) | Intermediate computation units (positioned in middle) |
-| **Inputs Subgraph** | Rounded Box | Pale Blue (`#e6f3ff`) | Header summarizes inputs `Inputs: x = ..., y = ...` (aligned horizontally at bottom) |
-| **Value Nodes** | Rounded Pill (`(["..."])`) | Pale Green Fill, Dark Border | Variable / operation value $v(\cdot)$ |
-| **Derivative Nodes** | Trapezoid (`[\"...\"/]`) | Pale Pink Fill (`#fcf`) | Symbolic & numerical local derivative rule |
+| **Output Subgraph** | Rounded Box | Pale Green fill (`#e6ffee`), Dark Green border (`#1e7e34`) | Header summarizes target equation `Output: out = <formula>` |
+| **Operation Subgraph** | Large Subgraph | Pale Yellow fill (`#fff3cd`), Dark Amber border (`#d39e00`) | Intermediate computation units (positioned in middle) |
+| **Inputs Subgraph** | Rounded Box | Pale Blue fill (`#e6f3ff`), Dark Blue border (`#0d6efd`) | Header summarizes inputs `Inputs: x = ..., y = ...` (aligned horizontally at bottom) |
+| **Value Nodes** | Rounded Pill (`(["..."])`) | Pale Green fill (`#d4edda`), Dark Green border (`#1e7e34`) | Variable / operation value $v(\cdot)$ |
+| **Derivative Nodes** | Trapezoid (`[\"...\"/]`) | Pale Pink fill (`#fce4ec`), Dark Berry border (`#c2185b`) | Symbolic & numerical local derivative rule |
 | **Forward Edges** | Solid Line (`-->`) | Bright Green (`#0a0`, 3.5px) | Forward flow $f = \text{val}$ (pointing upward toward Output) |
-| **Backward Edges** | Dashed Line (`<-.-`) | Magenta (`#a0a`, 3px dashed) | Backward adjoint flow $g = \text{grad}$ (pointing downward toward Inputs) |
+| **Backward Edges** | Dashed Line (`<-.->`) | Magenta (`#a0a`, 3px dashed, `marker-end:none`) | Backward adjoint flow $g = \text{grad}$ (pointing downward toward Inputs) |
 
-*The visual graph is declared as `graph BT` with downward backward edge definitions (`target <-.-|"g"| source`), completely eliminating rank cycles and conflicting invisible links. All input nodes align cleanly on the same horizontal plane directly beneath the Operations subgraph.*
+*The visual graph is declared as `graph BT` with downward backward edges (`child <-.->|"g"| parent` with `marker-end:none`), completely eliminating rank cycles and conflicting invisible links. Every element's border is styled as a dark, saturated variant of its fill color. All input nodes align cleanly on the same horizontal plane directly beneath the Operations subgraph.*
 
 ---
 

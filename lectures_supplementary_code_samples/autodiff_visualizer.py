@@ -550,13 +550,13 @@ class ComputationGraph:
 
         # 6. Styling & Precise LinkStyle Application
         lines.append('    %% Styling')
-        lines.append('    classDef default fill:#f9f,stroke:#333,stroke-width:1px,color:#000;')
-        lines.append('    classDef forward fill:#cfc,stroke:#333,stroke-width:1px,color:#000;')
+        lines.append('    classDef default fill:#f8f9fa,stroke:#495057,stroke-width:1.5px,color:#000;')
+        lines.append('    classDef forward fill:#d4edda,stroke:#1e7e34,stroke-width:1.5px,color:#000;')
         if not forward_only:
-            lines.append('    classDef backward fill:#fcf,stroke:#333,stroke-width:1px,color:#000;')
-        lines.append('    classDef inputBg fill:#e6f3ff,stroke:#333,stroke-width:1px,color:#000;')
-        lines.append('    classDef operationBg fill:#fff2cc,stroke:#333,stroke-width:1px,color:#000;')
-        lines.append('    classDef outputBg fill:#e6ffee,stroke:#333,stroke-width:1px,color:#000;')
+            lines.append('    classDef backward fill:#fce4ec,stroke:#c2185b,stroke-width:1.5px,color:#000;')
+        lines.append('    classDef inputBg fill:#e6f3ff,stroke:#0d6efd,stroke-width:1.5px,color:#000;')
+        lines.append('    classDef operationBg fill:#fff3cd,stroke:#d39e00,stroke-width:1.5px,color:#000;')
+        lines.append('    classDef outputBg fill:#e6ffee,stroke:#1e7e34,stroke-width:1.5px,color:#000;')
         lines.append('')
 
         forward_nodes = [out_uid] + [n.uid for n in self.nodes]
@@ -590,7 +590,5 @@ class ComputationGraph:
             bwd_indices = list(range(current_idx, current_idx + len(backward_edges)))
             lines.append(f'    linkStyle {",".join(map(str, bwd_indices))} stroke:#a0a,stroke-width:3px,stroke-dasharray: 3 3,marker-end:none;')
             current_idx += len(backward_edges)
-
-        lines.append('    style operation fill:solid,stroke:1px,stroke-width:1px,font-size:15px,font-weight:bold;')
 
         return "\n".join(lines)
