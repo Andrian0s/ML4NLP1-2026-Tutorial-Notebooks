@@ -16,7 +16,7 @@ In this repository, you will find the notebooks for the tutorials and exercises 
 
 ## Tutorials (will be updated as the course progresses)
 
-- **Week 02**: Tutorial logistics and FAQ — [W02_Tutorial_Logistics_and_FAQ_2025.pdf](./tutorials_notebooks_in_class_2026/W02_Tutorial_Logistics_and_FAQ_2025.pdf); Introduction to `scikit-learn` — [W02_Intro_to_sklearn.ipynb](./tutorials_notebooks_in_class_2026/W02_Intro_to_sklearn.ipynb)
+- **Week 02**: Tutorial logistics and FAQ — [W02_Tutorial_Logistics_and_FAQ_2025.pdf](./tutorials_notebooks_in_class_2026/W02_Tutorial_Logistics_and_FAQ_2025.pdf); Machine Learning basics with `sklearn` (feature representation, data leakage, pipelines) — [W02_Intro_to_sklearn.ipynb](./tutorials_notebooks_in_class_2026/W02_Intro_to_sklearn.ipynb)
 - **Week 03**: Introduction to `sklearn` Pipelines — [W03_tutorial_pipeline.ipynb](./tutorials_notebooks_in_class_2026/W03_tutorial_pipeline.ipynb)
 - **Week 04**: Neural networks with `skorch` and model interpretability with SHAP — [W04_tutorial_skorch.ipynb](./tutorials_notebooks_in_class_2026/W04_tutorial_skorch.ipynb), [W04_tutorial_shap.ipynb](./tutorials_notebooks_in_class_2026/W04_tutorial_shap.ipynb)
 - **Week 05**: A quick introduction to PyTorch — [W05_intro_to_PyTorch.ipynb](./tutorials_notebooks_in_class_2026/W05_intro_to_PyTorch.ipynb)
