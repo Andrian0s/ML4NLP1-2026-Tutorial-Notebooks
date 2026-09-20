@@ -526,7 +526,8 @@ class ComputationGraph:
         # 5. Backward Computation Edges (Dashed Magenta)
         backward_edges = []
         if not forward_only:
-            lines.append('    %% Backward computation')
+            lines.append('    %% Backward computation: written in child-to-parent form so Dagre preserves')
+            lines.append('    %% bottom-to-top ranking without 2-cycles, while directing arrowheads downward')
             # Seed gradient: out_target down to root
             seed_lbl = f"g = {grad_symbol}" if grad_symbol else "g = 1"
             backward_edges.append(f'    {self.root.uid} <-.-|"&nbsp;&nbsp;{seed_lbl}&nbsp;&nbsp;"| {out_uid}')

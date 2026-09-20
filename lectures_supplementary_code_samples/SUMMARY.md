@@ -4,24 +4,22 @@ This project provides an educational tool that decomposes arbitrary mathematical
 
 ---
 
-## 1. Core Pedagogical Concept
+## 1. Understanding the Computation Graph
 
-Modern deep learning frameworks compute gradients automatically via computational graphs. Rather than presenting reverse-mode autodiff as a black-box algorithm, this tool visualizes each step of the chain rule as a structured computational unit:
+The graph shows how an expression is evaluated in the forward pass and how its gradients are calculated in the backward pass. Read the forward computation from bottom to top and the backward computation from top to bottom.
 
-1. **Top-Down Computational Hierarchy**:
-   - **Top (`Output`)**: An `Output: out = <formula>` subgraph containing a clean target node displaying the evaluated scalar value ($v(\text{out})$ and $\text{out}$) without repeating operation syntax.
-   - **Middle (`Operations`)**: The sequence of decomposed elementary operations ($+, -, \times, \div, \text{pow}, \dots$).
-   - **Bottom (`Inputs`)**: An `Inputs: x = ..., y = ...` subgraph containing leaf input variables and constants, laid out in an aligned horizontal row.
+* **Blue area — Inputs**: The input variables and their values. Each green node shows the value $v(\dots)$ used in the computation and, after backpropagation, the resulting $\text{grad}(\dots)$.
+* **Yellow area — Operations**: The individual operations into which the expression has been decomposed. For an expression such as `(x**x) * y`, one operation computes $x^x$, and another multiplies that intermediate result by $y$. Each green operation node shows the expression and its value $v(\dots)$.
+* **Pink trapezoids — Local derivatives**: These show how an operation changes with respect to one of its arguments. For example, for the multiplication $b \cdot y$, the local derivatives are $\frac{\partial (b \cdot y)}{\partial b} = y$ and $\frac{\partial (b \cdot y)}{\partial y} = b$. For $b = x^x$, the derivative with respect to $x$ is $x^x \cdot (\ln(x) + 1)$.
+* **Green solid arrows — Forward computation ($f$)**: Values flow from the inputs through the operations toward the output. An edge labeled $f = \dots$ shows the numerical value being passed to the next operation.
+* **Purple dotted arrows — Backward computation ($g$)**: Gradients flow in the opposite direction, from the output back toward the inputs. An edge labeled $g = \dots$ shows the gradient propagated along that path.
+* **Green area — Output**: The final value of the complete expression. The backward computation starts at the output with $g = 1$.
 
-2. **Explicit Local Calculus & Adjoint Propagation**:
-   - Every elementary operation node exposes its **local partial derivatives** as dedicated trapezoid blocks (e.g., $\frac{\partial (x \cdot y)}{\partial x} = y$).
-   - Downstream adjoints (incoming gradients $g$) are multiplied by the local derivative ($g = \bar{z} \cdot \frac{\partial z}{\partial x}$) on the backward edges to propagate backward to child nodes.
-   - Shared input variables accumulate gradients across branching paths ($g(y) = \sum g_i$).
+During the forward pass, each operation receives values from below, computes its result, and passes that result upward. During the backward pass, each operation receives a gradient from above and uses its local derivatives to determine the gradients that are propagated toward its arguments.
 
-3. **Dual Data-Flow Semantics**:
-   - **Forward Pass (Solid Green $\rightarrow$)**: Propagates numerical values upward: $f = v(\text{child})$.
-   - **Backward Pass (Dashed Magenta $\dashrightarrow$)**: Propagates adjoints / gradients downward: $g = \bar{z} \cdot \frac{\partial z}{\partial x}$.
-   - **Forward-Only Mode**: Bypasses derivative construction and backpropagation entirely, providing a clean forward graph for introductory pedagogy.
+When an input influences the output through more than one path—as $x$ does in $x^x$—the relevant derivative contributions are combined to obtain the final $\text{grad}(x)$.
+
+*In short: green nodes and solid arrows represent values and forward computation; pink nodes and purple dotted arrows represent local derivatives and gradient propagation.*
 
 ---
 
