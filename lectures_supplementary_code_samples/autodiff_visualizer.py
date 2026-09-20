@@ -508,15 +508,16 @@ class ComputationGraph:
 
         # 4. Forward Computation Edges (Solid Green)
         lines.append('    %% Forward computation')
+        f_style = "background:rgb(228,238,230)!important;border:1px solid rgb(185,215,190);padding:1px 5px;border-radius:3px;"
         forward_edges = []
         for node in op_nodes:
             for arg in node.args:
                 forward_edges.append(
-                    f'    {arg.uid} -- "&nbsp;&nbsp;f = {format_num(arg.val)}&nbsp;&nbsp;" --> {node.uid}'
+                    f'    {arg.uid} -->|"<span style=\'{f_style}\'>f = {format_num(arg.val)}</span>"| {node.uid}'
                 )
         # Connect root operation to designated output target
         forward_edges.append(
-            f'    {self.root.uid} -- "&nbsp;&nbsp;f = {format_num(self.root.val)}&nbsp;&nbsp;" --> {out_uid}'
+            f'    {self.root.uid} -->|"<span style=\'{f_style}\'>f = {format_num(self.root.val)}</span>"| {out_uid}'
         )
 
         for e in forward_edges:
@@ -528,9 +529,12 @@ class ComputationGraph:
         if not forward_only:
             lines.append('    %% Backward computation: written in child-to-parent form so Dagre preserves')
             lines.append('    %% bottom-to-top ranking without 2-cycles, while directing arrowheads downward')
+            g_style = "background:rgb(245,228,234)!important;border:1px solid rgb(225,195,205);padding:1px 5px;border-radius:3px;"
             # Seed gradient: out_target down to root
             seed_lbl = f"g = {grad_symbol}" if grad_symbol else "g = 1"
-            backward_edges.append(f'    {self.root.uid} <-.->|"&nbsp;&nbsp;{seed_lbl}&nbsp;&nbsp;"| {out_uid}')
+            backward_edges.append(
+                f'    {self.root.uid} <-.->|"<span style=\'{g_style}\'>{seed_lbl}</span>"| {out_uid}'
+            )
 
             for node in reversed(op_nodes):
                 for i, loc in enumerate(node.local_derivatives):
@@ -541,7 +545,7 @@ class ComputationGraph:
                     backward_edges.append(f'    {der_uid} <-.-> {node.uid}')
                     # 1:1 discrete downward edge from derivative block to child argument with propagated gradient
                     backward_edges.append(
-                        f'    {arg.uid} <-.->|"&nbsp;&nbsp;g = {g_contrib}&nbsp;&nbsp;"| {der_uid}'
+                        f'    {arg.uid} <-.->|"<span style=\'{g_style}\'>g = {g_contrib}</span>"| {der_uid}'
                     )
 
             for e in backward_edges:
