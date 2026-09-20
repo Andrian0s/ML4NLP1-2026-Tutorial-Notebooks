@@ -530,7 +530,7 @@ class ComputationGraph:
             lines.append('    %% bottom-to-top ranking without 2-cycles, while directing arrowheads downward')
             # Seed gradient: out_target down to root
             seed_lbl = f"g = {grad_symbol}" if grad_symbol else "g = 1"
-            backward_edges.append(f'    {self.root.uid} <-.-|"&nbsp;&nbsp;{seed_lbl}&nbsp;&nbsp;"| {out_uid}')
+            backward_edges.append(f'    {self.root.uid} <-.->|"&nbsp;&nbsp;{seed_lbl}&nbsp;&nbsp;"| {out_uid}')
 
             for node in reversed(op_nodes):
                 for i, loc in enumerate(node.local_derivatives):
@@ -538,10 +538,10 @@ class ComputationGraph:
                     der_uid = f"der_{node.uid}_{arg.uid}_{i}"
                     g_contrib = format_num(loc['grad_contrib'])
                     # 1:1 discrete downward edge from operation to derivative block
-                    backward_edges.append(f'    {der_uid} <-.- {node.uid}')
+                    backward_edges.append(f'    {der_uid} <-.-> {node.uid}')
                     # 1:1 discrete downward edge from derivative block to child argument with propagated gradient
                     backward_edges.append(
-                        f'    {arg.uid} <-.-|"&nbsp;&nbsp;g = {g_contrib}&nbsp;&nbsp;"| {der_uid}'
+                        f'    {arg.uid} <-.->|"&nbsp;&nbsp;g = {g_contrib}&nbsp;&nbsp;"| {der_uid}'
                     )
 
             for e in backward_edges:
@@ -588,7 +588,7 @@ class ComputationGraph:
         # Backward links
         if backward_edges:
             bwd_indices = list(range(current_idx, current_idx + len(backward_edges)))
-            lines.append(f'    linkStyle {",".join(map(str, bwd_indices))} stroke:#a0a,stroke-width:3px,stroke-dasharray: 3 3;')
+            lines.append(f'    linkStyle {",".join(map(str, bwd_indices))} stroke:#a0a,stroke-width:3px,stroke-dasharray: 3 3,marker-end:none;')
             current_idx += len(backward_edges)
 
         lines.append('    style operation fill:solid,stroke:1px,stroke-width:1px,font-size:15px,font-weight:bold;')

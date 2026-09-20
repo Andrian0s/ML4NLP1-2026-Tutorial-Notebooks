@@ -100,7 +100,7 @@ def _run_and_investigate(name, expr_str, feed_dict, root_name="out", forward_onl
 
     # Verify linkStyle indices strictly match emitted edges
     fwd_count = len(re.findall(r"-->", mermaid_code))
-    bwd_count = len(re.findall(r"<-.-", mermaid_code))
+    bwd_count = len(re.findall(r"<-.->", mermaid_code))
     total_edges = fwd_count + bwd_count
 
     link_styles = re.findall(r"linkStyle\s+([0-9,]+)", mermaid_code)
