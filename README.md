@@ -35,7 +35,7 @@ Files with `2025` in their name are still the versions from last year and will b
 
 ### Exercise 01: 
 
-From linear to deep learning models for text classification. In this exercise, you will implement a simple linear model for text classification using the `sklearn` library. You will then extend the model to a deep learning model using the `skorch` library.
+From linear to deep learning models for text classification. In this exercise, you will implement a simple linear model for text classification using the `sklearn` library. You will then extend the model to a simple neural network (a multilayer perceptron).
 
 See the exercise sheet for more details: [Exercise 01](./exercises/ex1)
 
