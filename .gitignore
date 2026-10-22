@@ -1,5 +1,5 @@
 .venv
-exercises/ex4/results1
-exercises/ex4/results2
-exercises/ex4/results3
-exercises/ex4/results4
+exercises/ex4*/results1
+exercises/ex4*/results2
+exercises/ex4*/results3
+exercises/ex4*/results4

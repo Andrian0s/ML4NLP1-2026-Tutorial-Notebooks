@@ -21,15 +21,15 @@ In this repository, you will find the notebooks for the tutorials and exercises 
 - **Week 04**: Neural networks with `skorch` — [W04_tutorial_skorch.ipynb](./tutorials_notebooks_in_class_2026/W04_tutorial_skorch.ipynb)
 - **Week 05**: A quick introduction to PyTorch — [W05_intro_to_PyTorch.ipynb](./tutorials_notebooks_in_class_2026/W05_intro_to_PyTorch.ipynb)
 - **Week 06**: Word similarity and analogy with pretrained word vectors — [W06_similarity_analogy.ipynb](./tutorials_notebooks_in_class_2026/W06_similarity_analogy.ipynb)
-- **Week 07**: LSTM computation graph exercise — [W07_lstm_computation_graph_exercise_2025.pdf](./tutorials_notebooks_in_class_2026/W07_lstm_computation_graph_exercise_2025.pdf)
-- **Week 08**: Introduction to HuggingFace `transformers` and `datasets` — [W08_intro_to_hugging_face_transformers_datasets.ipynb](./tutorials_notebooks_in_class_2026/W08_intro_to_hugging_face_transformers_datasets.ipynb)
-- **Week 09**: Introduction to GLiNER and NuExtract — [W09_introduction_to_gliner_nuextract.ipynb](./tutorials_notebooks_in_class_2026/W09_introduction_to_gliner_nuextract.ipynb)
-- **Week 10**: Introduction to prompt engineering — [W10_introduction_to_prompt_engineering_2025.pdf](./tutorials_notebooks_in_class_2026/W10_introduction_to_prompt_engineering_2025.pdf)
-- **Week 11**: picoGPT: next-token prediction and loss computation step by step — [W11_picoGPT.ipynb](./tutorials_notebooks_in_class_2026/W11_picoGPT.ipynb)
-- **Week 13**: Vector search with Qdrant — [W13_Qdrant_demo.ipynb](./tutorials_notebooks_in_class_2026/W13_Qdrant_demo.ipynb)
-- **Week 14**: Exam preparation — [W14 ML4NLP1-2025 - Exam Prep.pdf](./tutorials_notebooks_in_class_2026/W14%20ML4NLP1-2025%20-%20Exam%20Prep.pdf)
+- **Week 07**: LSTM computation graph exercise — [W07_lstm_computation_graph_exercise_2025.pdf](./tutorials_notebooks_in_class_2026/W07_lstm_computation_graph_exercise_2025.pdf) *(2025 version)*
+- **Week 08**: Introduction to HuggingFace `transformers` and `datasets` — [W08_intro_to_hugging_face_transformers_datasets.ipynb](./tutorials_notebooks_in_class_2026/W08_intro_to_hugging_face_transformers_datasets.ipynb) *(2025 version)*
+- **Week 09**: Introduction to GLiNER and NuExtract — [W09_introduction_to_gliner_nuextract.ipynb](./tutorials_notebooks_in_class_2026/W09_introduction_to_gliner_nuextract.ipynb) *(2025 version)*
+- **Week 10**: Introduction to prompt engineering — [W10_introduction_to_prompt_engineering_2025.pdf](./tutorials_notebooks_in_class_2026/W10_introduction_to_prompt_engineering_2025.pdf) *(2025 version)*
+- **Week 11**: picoGPT: next-token prediction and loss computation step by step — [W11_picoGPT.ipynb](./tutorials_notebooks_in_class_2026/W11_picoGPT.ipynb) *(2025 version)*
+- **Week 13**: Vector search with Qdrant — [W13_Qdrant_demo.ipynb](./tutorials_notebooks_in_class_2026/W13_Qdrant_demo.ipynb) *(2025 version)*
+- **Week 14**: Exam preparation — [W14 ML4NLP1-2025 - Exam Prep.pdf](./tutorials_notebooks_in_class_2026/W14%20ML4NLP1-2025%20-%20Exam%20Prep.pdf) *(2025 version)*
 
-Files with `2025` in their name are still the versions from last year and will be replaced with the 2026 versions as the semester progresses.
+Tutorials marked *(2025 version)* are still the versions from last year and will be replaced with the 2026 versions as the semester progresses.
 
 ## Exercises (will be updated as the course progresses)
 
@@ -46,10 +46,10 @@ Building word embeddings with PyTorch. In this exercise, you will implement a Co
 Also known as Exercise AB. Handled through Simon Clematide. Please see OLAT Course for details.
 
 ### Exercise 04:
-Named Entity Recognition using Transformer Encoders. In this exercise, you will fine-tune a BERT model using the HuggingFace library. Additionally, you will experiment with GliNER to perform anonymization of texts. See the exercise sheet for more details: [Exercise 04](./exercises/ex4)
+Named Entity Recognition using Transformer Encoders. In this exercise, you will fine-tune a BERT model using the HuggingFace library. Additionally, you will experiment with GliNER to perform anonymization of texts. See the exercise sheet for more details: [Exercise 04](./exercises/ex4_old)
 
 ### Exercise 05: 
-LLM Prompting, Prompt Engineering and small LLM fine-tuning using Unsloth AI. See the exercise sheet for more details: [Exercise 05](./exercises/ex5)
+LLM Prompting, Prompt Engineering and small LLM fine-tuning using Unsloth AI. See the exercise sheet for more details: [Exercise 05](./exercises/ex5_old)
 
 ### Exercise 06: 
-Topic Modeling using LDA and CTM. See the exercise sheet for more details: [Exercise 06](./exercises/ex6)
+Topic Modeling using LDA and CTM. See the exercise sheet for more details: [Exercise 06](./exercises/ex6_old)
