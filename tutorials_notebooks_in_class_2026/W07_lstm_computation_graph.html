@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LSTM Computation Graph</title>
+<style>
+  :root {
+    --bg: #fbfbf9;
+    --surface: #ffffff;
+    --ink: #1d1d1b;
+    --ink-2: #52514e;
+    --ink-3: #8a8983;
+    --line: #e4e3de;
+    --accent: #2a78d6;
+    --accent-soft: #e8f1fc;
+    --rnn: #d4561f;
+    --cell: #2a78d6;
+    --code-bg: #f1f0ec;
+    --hint-bg: #fdf3dc;
+    --hint-line: #d08a00;
+    --math: "Cambria Math", "STIX Two Math", "Latin Modern Math", "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161615;
+      --surface: #1f1f1d;
+      --ink: #ecebe7;
+      --ink-2: #b5b3ac;
+      --ink-3: #85837c;
+      --line: #34332f;
+      --accent: #6aa5ec;
+      --accent-soft: #1d2a3a;
+      --rnn: #f08c62;
+      --cell: #6aa5ec;
+      --code-bg: #2a2a27;
+      --hint-bg: #2f2716;
+      --hint-line: #e0a537;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161615;
+    --surface: #1f1f1d;
+    --ink: #ecebe7;
+    --ink-2: #b5b3ac;
+    --ink-3: #85837c;
+    --line: #34332f;
+    --accent: #6aa5ec;
+    --accent-soft: #1d2a3a;
+    --rnn: #f08c62;
+    --cell: #6aa5ec;
+    --code-bg: #2a2a27;
+    --hint-bg: #2f2716;
+    --hint-line: #e0a537;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 780px; margin: 0 auto; padding: 40px 16px 64px; }
+  header { margin-bottom: 28px; }
+  .kicker { color: var(--ink-3); font-size: 14px; letter-spacing: .02em; margin: 0 0 6px; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 10px; }
+  .meta { color: var(--ink-2); margin: 0; }
+  h2 { font-size: 21px; margin: 0 0 12px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  h2 .time { font-size: 14px; font-weight: 400; color: var(--ink-3); }
+  section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin: 0 0 18px;
+  }
+  .question {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 0 0 18px;
+    font-size: 17px;
+  }
+  .hint {
+    border-left: 4px solid var(--hint-line);
+    background: var(--hint-bg);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 0 0 16px;
+  }
+  p { margin: 0 0 12px; }
+  ol, ul { margin: 0 0 12px; padding-left: 24px; }
+  li { margin-bottom: 8px; }
+  li:last-child, p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); }
+  code {
+    font: 14px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .m { font-family: var(--math); font-size: 1.08em; white-space: nowrap; }
+  sub, sup { line-height: 0; }
+  .m sup, .formula sup, .vals sup { margin-left: .1em; }
+  .formula {
+    font-family: var(--math);
+    font-size: 19px;
+    text-align: center;
+    margin: 6px 0 16px;
+    line-height: 1.9;
+    overflow-x: auto;
+  }
+  .formula .row { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+  .vals {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 2px 48px;
+    justify-content: center;
+    font-family: var(--math);
+    font-size: 18px;
+    margin: 0 0 16px;
+  }
+  .viz {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 10px;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .viz:hover { background: var(--accent-soft); }
+  .ask { font-weight: 600; }
+  .note { color: var(--ink-2); font-size: 15px; }
+  details {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+  }
+  details[open] { padding-bottom: 14px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { margin-top: 10px; }
+  details.hint-toggle { border: 0; padding: 0; margin: 4px 0 0; }
+  details.hint-toggle summary { font-weight: 400; font-size: 15px; color: var(--accent); }
+  details.hint-toggle p { margin-top: 4px; }
+
+  /* gradient explorer */
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; margin: 14px 0 6px; }
+  .controls label { display: block; font-size: 15px; color: var(--ink-2); }
+  .controls output { font-weight: 600; color: var(--ink); }
+  .controls input { width: 100%; }
+  .legend { display: flex; gap: 20px; font-size: 14px; color: var(--ink-2); margin: 8px 0 0; flex-wrap: wrap; }
+  .legend span::before {
+    content: ""; display: inline-block; width: 18px; height: 3px; border-radius: 2px;
+    vertical-align: middle; margin-right: 6px; background: var(--c);
+  }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; }
+  .axis text { fill: var(--ink-3); font-size: 12px; }
+  .grid line { stroke: var(--line); stroke-width: 1; }
+  .series { fill: none; stroke-width: 2; stroke-linejoin: round; }
+  .end-label { font-size: 13px; font-weight: 600; }
+  .tip {
+    position: absolute; pointer-events: none; display: none;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 6px 10px; font-size: 13px; line-height: 1.5; color: var(--ink);
+    box-shadow: 0 2px 8px rgba(0,0,0,.08); white-space: nowrap;
+  }
+  .readout { font-size: 15px; color: var(--ink-2); margin-top: 6px; }
+  .readout b { color: var(--ink); }
+  @media (max-width: 560px) {
+    section { padding: 18px 16px; }
+    h1 { font-size: 25px; }
+    .controls { grid-template-columns: 1fr; }
+    .formula { font-size: 17px; }
+    .formula .row { gap: 4px 24px; }
+    .axis text, .end-label { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <p class="kicker">ML4NLP1 · Week 07 · Self-study</p>
+  <h1>The Computation Graph of an LSTM</h1>
+  <p class="meta">There is no in-person tutorial this week. Instead, please work through this sheet on your own; it should take about 50 minutes. Computation graphs and RNNs are both typical exam topics, so it is well worth the time.</p>
+</header>
+
+<div class="question">
+  <b>Guiding question:</b> why can an LSTM carry information across many more time steps than a simple RNN? You will draw the complete computation graph of one LSTM step by hand and then see, with actual numbers, where the gradient vanishes and where it does not.
+</div>
+
+<section>
+  <h2>What you need</h2>
+  <ul>
+    <li>Pen and paper (or any drawing tool you like) and a calculator.</li>
+    <li>Simon's <a href="https://huggingface.co/spaces/simon-clmtd/autodiff-visualizer" target="_blank" rel="noopener">autodiff visualizer</a>, which you know from the lecture. Every <span class="viz" style="margin:0">Open ↗</span> link below opens it with an expression and values already filled in. The visualizer computes with concrete numbers, so each part gives you values for the inputs and the weights. These values are invented for the exercise; in a real network, the weights would be learned. The <i>Visual Diagram</i> tab shows the graph with the forward value and the gradient (the overlined value) in each node, and the <i>Step-by-Step Walkthrough</i> tab lists every local derivative. You can change the values and run it again.</li>
+  </ul>
+  <p>Please draw each graph first and only then open the link: comparing your own drawing with the result is where most of the learning happens.</p>
+  <p class="note">To keep the graphs readable, we use a single hidden unit, so all vectors and matrices become single numbers. The structure of the graph stays the same as with vectors. The formulas have no bias terms.</p>
+</section>
+
+<section>
+  <h2>Part 1: One step of a simple RNN <span class="time">10 min</span></h2>
+  <div class="formula"><i>h</i><sub><i>j</i></sub> = tanh(<i>x</i><sub><i>j</i></sub> <i>w</i><sup><i>x</i></sup> + <i>h</i><sub><i>j</i>−1</sub> <i>w</i><sup><i>h</i></sup>)</div>
+  <p>Values: <span class="m"><i>x</i><sub><i>j</i></sub> = 1</span>, <span class="m"><i>h</i><sub><i>j</i>−1</sub> = 0.1</span>, <span class="m"><i>w</i><sup><i>x</i></sup> = 0.5</span>, <span class="m"><i>w</i><sup><i>h</i></sup> = 0.5</span>.</p>
+  <ol>
+    <li>Draw the computation graph. The leaf nodes are the inputs <span class="m"><i>x</i><sub><i>j</i></sub></span> and <span class="m"><i>h</i><sub><i>j</i>−1</sub></span> and the weights <span class="m"><i>w</i><sup><i>x</i></sup></span> and <span class="m"><i>w</i><sup><i>h</i></sup></span>.</li>
+    <li><b>Forward pass:</b> write the values into the leaves and compute the value of every other node, up to <span class="m"><i>h</i><sub><i>j</i></sub></span>.</li>
+    <li><b>Backward pass:</b> start with the gradient 1 at <span class="m"><i>h</i><sub><i>j</i></sub></span> and compute the gradient of <span class="m"><i>h</i><sub><i>j</i></sub></span> with respect to every other node, down to the four leaves. Hint: the derivative of <span class="m">tanh(<i>a</i>)</span> is <span class="m">1 − tanh<sup>2</sup>(<i>a</i>)</span>. The visualizer writes it as <code>cosh(a)**(-2)</code>, that is <span class="m">1 / cosh<sup>2</sup>(<i>a</i>)</span>, which is the same function.</li>
+    <li><span class="ask">❓ On its way from <span class="m"><i>h</i><sub><i>j</i></sub></span> back to <span class="m"><i>h</i><sub><i>j</i>−1</sub></span>, the gradient is multiplied by two local derivatives. Which ones?</span></li>
+    <li>Check your graph and your numbers in the visualizer, where the variables are typed as <code>x</code>, <code>h</code>, <code>wx</code> and <code>wh</code>. <a class="viz" target="_blank" rel="noopener" href="https://huggingface.co/spaces/simon-clmtd/autodiff-visualizer?expr=tanh%28x%2Awx%2Bh%2Awh%29&amp;vals=x%3D1%2C+h%3D0.1%2C+wx%3D0.5%2C+wh%3D0.5&amp;mode=both">One RNN step ↗</a></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Part 2: The full LSTM step by hand <span class="time">20 min</span></h2>
+  <p>These are the LSTM formulas in Goldberg's notation:</p>
+  <div class="formula">
+    <div class="row">
+      <span><i>c</i><sub><i>j</i></sub> = <i>f</i> ⊙ <i>c</i><sub><i>j</i>−1</sub> + <i>i</i> ⊙ <i>z</i></span>
+      <span><i>h</i><sub><i>j</i></sub> = <i>o</i> ⊙ tanh(<i>c</i><sub><i>j</i></sub>)</span>
+    </div>
+    <div class="row">
+      <span><i>i</i> = σ(<i>x</i><sub><i>j</i></sub> <i>W</i><sup><i>xi</i></sup> + <i>h</i><sub><i>j</i>−1</sub> <i>W</i><sup><i>hi</i></sup>)</span>
+      <span><i>f</i> = σ(<i>x</i><sub><i>j</i></sub> <i>W</i><sup><i>xf</i></sup> + <i>h</i><sub><i>j</i>−1</sub> <i>W</i><sup><i>hf</i></sup>)</span>
+    </div>
+    <div class="row">
+      <span><i>o</i> = σ(<i>x</i><sub><i>j</i></sub> <i>W</i><sup><i>xo</i></sup> + <i>h</i><sub><i>j</i>−1</sub> <i>W</i><sup><i>ho</i></sup>)</span>
+      <span><i>z</i> = tanh(<i>x</i><sub><i>j</i></sub> <i>W</i><sup><i>xz</i></sup> + <i>h</i><sub><i>j</i>−1</sub> <i>W</i><sup><i>hz</i></sup>)</span>
+    </div>
+  </div>
+  <p>Values: <span class="m"><i>x</i><sub><i>j</i></sub> = 1</span>, <span class="m"><i>h</i><sub><i>j</i>−1</sub> = 0.5</span>, <span class="m"><i>c</i><sub><i>j</i>−1</sub> = 0.3</span>, and the weights below (typed as <code>wxi</code>, <code>whi</code> and so on in the visualizer).</p>
+  <div class="vals">
+    <span><i>W</i><sup><i>xi</i></sup> = 0.4</span><span><i>W</i><sup><i>hi</i></sup> = −0.3</span>
+    <span><i>W</i><sup><i>xf</i></sup> = 1</span><span><i>W</i><sup><i>hf</i></sup> = 0.6</span>
+    <span><i>W</i><sup><i>xo</i></sup> = 0.3</span><span><i>W</i><sup><i>ho</i></sup> = 0.5</span>
+    <span><i>W</i><sup><i>xz</i></sup> = 0.8</span><span><i>W</i><sup><i>hz</i></sup> = 0.5</span>
+  </div>
+  <p>Draw the complete computation graph (forward pass only, no gradients) of one step, and label the operator nodes with the names from the formulas (<span class="m"><i>f</i>, <i>i</i>, <i>o</i>, <i>z</i>, <i>c</i><sub><i>j</i></sub>, <i>h</i><sub><i>j</i></sub></span>).</p>
+  <p>Some help:</p>
+  <ul>
+    <li>The leaf nodes are the inputs <span class="m"><i>x</i><sub><i>j</i></sub></span>, <span class="m"><i>h</i><sub><i>j</i>−1</sub></span> and <span class="m"><i>c</i><sub><i>j</i>−1</sub></span> and the eight weights.</li>
+    <li><span class="m"><i>x</i><sub><i>j</i></sub></span> and <span class="m"><i>h</i><sub><i>j</i>−1</sub></span> each feed into all four gates.</li>
+    <li>Start with one gate, for example <span class="m"><i>o</i></span>, and check it in the visualizer. The other three gates follow the same pattern. <a class="viz" target="_blank" rel="noopener" href="https://huggingface.co/spaces/simon-clmtd/autodiff-visualizer?expr=sigmoid%28x%2Awxo%2Bh%2Awho%29&amp;vals=x%3D1%2C+h%3D0.5%2C+wxo%3D0.3%2C+who%3D0.5&amp;mode=forward">Output gate ↗</a></li>
+  </ul>
+  <p>Then compare your drawing with the complete step. <a class="viz" target="_blank" rel="noopener" href="https://huggingface.co/spaces/simon-clmtd/autodiff-visualizer?expr=sigmoid%28x%2Awxo%2Bh%2Awho%29%2Atanh%28sigmoid%28x%2Awxf%2Bh%2Awhf%29%2Ac%2Bsigmoid%28x%2Awxi%2Bh%2Awhi%29%2Atanh%28x%2Awxz%2Bh%2Awhz%29%29&amp;vals=x%3D1%2C+h%3D0.5%2C+c%3D0.3%2C+wxf%3D1%2C+whf%3D0.6%2C+wxi%3D0.4%2C+whi%3D-0.3%2C+wxz%3D0.8%2C+whz%3D0.5%2C+wxo%3D0.3%2C+who%3D0.5&amp;mode=forward">Full LSTM step ↗</a> The visualizer numbers the intermediate nodes <code>n1</code>, <code>n2</code>, …, and each node shows how it is computed from the previous ones, for example <code>n3 = n1 + n2</code>. So first find out which of them are <span class="m"><i>f</i>, <i>i</i>, <i>o</i>, <i>z</i></span> and <span class="m"><i>c</i><sub><i>j</i></sub></span>. The easiest way is to start from the weights, whose names contain the gate: following the edges from <code>wxf</code> and <code>whf</code> upwards, the σ node you reach is <span class="m"><i>f</i></span>. To check, compute <span class="m"><i>f</i></span> by hand and compare it with the value of that node.</p>
+</section>
+
+<section>
+  <h2>Part 3: The cell state <span class="time">10 min</span></h2>
+  <div class="hint"><b>Tip:</b> the two diagrams in this part show both the forward and the backward pass, which makes them hard to read in the visualizer itself. Download each of them as a PDF under <i>Export</i>, below the diagram, and zoom in there.</div>
+  <ol>
+    <li>In your drawing, mark the path from <span class="m"><i>c</i><sub><i>j</i>−1</sub></span> to <span class="m"><i>c</i><sub><i>j</i></sub></span>. <span class="ask">❓ Which operations lie on it?</span> Compare them with the path from <span class="m"><i>h</i><sub><i>j</i>−1</sub></span> to <span class="m"><i>h</i><sub><i>j</i></sub></span> in Part 1.</li>
+    <li>Open the cell state update, which uses the values from Part 2. <span class="ask">❓ The gradient at <code>c</code> equals the value of one of the nodes. Which one, and why?</span> <a class="viz" target="_blank" rel="noopener" href="https://huggingface.co/spaces/simon-clmtd/autodiff-visualizer?expr=sigmoid%28x%2Awxf%2Bh%2Awhf%29%2Ac%2Bsigmoid%28x%2Awxi%2Bh%2Awhi%29%2Atanh%28x%2Awxz%2Bh%2Awhz%29&amp;vals=x%3D1%2C+h%3D0.5%2C+c%3D0.3%2C+wxf%3D1%2C+whf%3D0.6%2C+wxi%3D0.4%2C+whi%3D-0.3%2C+wxz%3D0.8%2C+whz%3D0.5&amp;mode=both">Cell state update ↗</a></li>
+    <li>Now the cell state runs for five steps. To focus on the cell state, the gates are fixed numbers here: <span class="m"><i>f</i> = 0.9</span>, <span class="m"><i>i</i> = 0.5</span>, <span class="m"><i>z</i> = 0.5</span>, and the cell starts at <span class="m"><i>c</i><sub>0</sub> = 0.1</span>. Read off the gradient at <code>c0</code>. Then set <code>f</code> to 1 and to 0.5. <a class="viz" target="_blank" rel="noopener" href="https://huggingface.co/spaces/simon-clmtd/autodiff-visualizer?expr=f%2A%28f%2A%28f%2A%28f%2A%28f%2Ac0%2Bi%2Az%29%2Bi%2Az%29%2Bi%2Az%29%2Bi%2Az%29%2Bi%2Az&amp;vals=c0%3D0.1%2C+f%3D0.9%2C+i%3D0.5%2C+z%3D0.5&amp;mode=both">Five cell state steps ↗</a></li>
+    <li><span class="ask">❓ What does an LSTM have to learn in order to keep a piece of information for many steps? And what happens when <span class="m"><i>f</i></span> is close to 0?</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Part 4: RNN and LSTM over twenty steps <span class="time">10 min</span></h2>
+  <p>Finally, let us compare the two over many steps. The chart shows the gradient that reaches <span class="m"><i>h</i><sub>0</sub></span> when the RNN from Part 1 runs for twenty steps, and the gradient that reaches <span class="m"><i>c</i><sub>0</sub></span> along the cell state from Part 3. The RNN uses the values from Part 1 and receives the same input <span class="m"><i>x</i> = 1</span> at every step. Note that the vertical axis is logarithmic: every grid line is a factor of 1,000.</p>
+  <div class="controls">
+    <label>RNN weight <code>wh</code> = <output id="whOut">0.5</output>
+      <input id="wh" type="range" min="0.1" max="3" step="0.1" value="0.5"></label>
+    <label>LSTM forget gate <code>f</code> = <output id="fOut">0.90</output>
+      <input id="f" type="range" min="0.05" max="1" step="0.01" value="0.9"></label>
+  </div>
+  <div class="legend"><span style="--c: var(--rnn)">RNN: gradient at <i>h</i><sub>0</sub></span><span style="--c: var(--cell)">LSTM: gradient at <i>c</i><sub>0</sub></span></div>
+  <div class="chart-wrap">
+    <svg id="chart" viewBox="0 0 680 330" role="img" aria-label="Gradient magnitude over 20 steps for the RNN and the LSTM cell state, logarithmic scale"></svg>
+    <div class="tip" id="tip"></div>
+  </div>
+  <p class="readout" id="readout"></p>
+  <noscript><p class="note">This chart needs JavaScript. With the default values, the RNN gradient falls to <code>2.14e-3</code> after five steps and to <code>4.37e-12</code> after twenty steps, whereas the gradient along the cell state is still 0.59 and 0.12.</p></noscript>
+  <p>The two sliders are independent and do not need to have the same value, since they are different kinds of numbers: <code>wh</code> is a weight of the RNN, while <code>f</code> is the value of the LSTM's forget gate, which always lies between 0 and 1. What you compare is how much of the gradient survives each step back. In the RNN, it is multiplied by <span class="m"><i>w</i><sup><i>h</i></sup></span> and by the derivative of tanh; along the cell state, it is multiplied only by <span class="m"><i>f</i></span>.</p>
+  <ol>
+    <li>With the default values, compare the two gradients after one, five and twenty steps. If you hover over the chart, it shows the exact numbers.</li>
+    <li>Move the <code>wh</code> slider and try to make the RNN gradient after twenty steps as large as possible. <span class="ask">❓ Why does it remain tiny, however you set <code>wh</code>?</span>
+      <details class="hint-toggle"><summary>Hint</summary><p>Look at the two factors separately. What happens to their product when <span class="m"><i>w</i><sup><i>h</i></sup></span> is small? And what happens to tanh and its derivative when <span class="m"><i>w</i><sup><i>h</i></sup></span> is large?</p></details></li>
+    <li>Now move the <code>f</code> slider. <span class="ask">❓ How close to 1 does <span class="m"><i>f</i></span> have to be so that, after twenty steps, the gradient is still at least 0.1? What happens when <span class="m"><i>f</i></span> is small?</span></li>
+    <li><span class="ask">❓ What does this mean for a model that has to connect a word with another word twenty positions earlier?</span></li>
+  </ol>
+  <p class="note">In a real LSTM, the gates themselves depend on <span class="m"><i>h</i><sub><i>j</i>−1</sub></span>, so there are further paths through the gates, and the gradient along those can vanish just as in the RNN. The direct path through the cell state, however, remains.</p>
+</section>
+
+<section>
+  <h2>Check your answers</h2>
+  <details>
+    <summary>Part 1</summary>
+    <p>Forward pass: <span class="m"><i>x</i><sub><i>j</i></sub> <i>w</i><sup><i>x</i></sup> = 0.5</span> and <span class="m"><i>h</i><sub><i>j</i>−1</sub> <i>w</i><sup><i>h</i></sup> = 0.05</span>, so the sum is 0.55 and <span class="m"><i>h</i><sub><i>j</i></sub> = tanh(0.55) ≈ 0.50</span>.</p>
+    <p>Backward pass: the gradient at the input of tanh is <span class="m">1 − <i>h</i><sub><i>j</i></sub><sup>2</sup> = 1 − 0.50<sup>2</sup> ≈ 0.75</span>. The addition passes it on unchanged to both products, and each multiplication passes it on multiplied by the other factor. The gradients at the leaves are therefore <span class="m">0.75 · <i>w</i><sup><i>x</i></sup> ≈ 0.37</span> at <span class="m"><i>x</i><sub><i>j</i></sub></span>, <span class="m">0.75 · <i>x</i><sub><i>j</i></sub> = 0.75</span> at <span class="m"><i>w</i><sup><i>x</i></sup></span>, <span class="m">0.75 · <i>w</i><sup><i>h</i></sup> ≈ 0.37</span> at <span class="m"><i>h</i><sub><i>j</i>−1</sub></span> and <span class="m">0.75 · <i>h</i><sub><i>j</i>−1</sub> ≈ 0.07</span> at <span class="m"><i>w</i><sup><i>h</i></sup></span>.</p>
+    <p>On the way to <span class="m"><i>h</i><sub><i>j</i>−1</sub></span>, the gradient is thus multiplied by the derivative of tanh (0.75) and by the weight <span class="m"><i>w</i><sup><i>h</i></sup> = 0.5</span>, which gives about 0.37.</p>
+    <p>The visualizer shows the same 0.75 as <code>cosh(n3)**(-2)</code>: since <span class="m">cosh<sup>2</sup> − sinh<sup>2</sup> = 1</span>, dividing by <span class="m">cosh<sup>2</sup></span> gives <span class="m">1 − tanh<sup>2</sup> = 1 / cosh<sup>2</sup></span>.</p>
+  </details>
+  <details>
+    <summary>Part 2</summary>
+    <p>The forget gate is <span class="m"><i>f</i> = σ(1 · 1 + 0.5 · 0.6) = σ(1.3) ≈ 0.79</span>. In the full step, <span class="m"><i>f</i></span> = 0.79, <span class="m"><i>i</i></span> = 0.56, <span class="m"><i>z</i></span> = 0.78, <span class="m"><i>c</i><sub><i>j</i></sub></span> = 0.68, <span class="m"><i>o</i></span> = 0.63 and <span class="m"><i>h</i><sub><i>j</i></sub></span> = 0.37. In the visualizer, these are the nodes <code>n8</code> (<span class="m"><i>f</i></span>), <code>n13</code> (<span class="m"><i>i</i></span>), <code>n17</code> (<span class="m"><i>z</i></span>), <code>n19</code> (<span class="m"><i>c</i><sub><i>j</i></sub></span>), <code>n4</code> (<span class="m"><i>o</i></span>) and <code>out</code> (<span class="m"><i>h</i><sub><i>j</i></sub></span>). Your drawing should contain four gate blocks of the same shape (two multiplications by weights, an addition and a σ or tanh), all fed by the same <span class="m"><i>x</i><sub><i>j</i></sub></span> and <span class="m"><i>h</i><sub><i>j</i>−1</sub></span>. On top of them, <span class="m"><i>c</i><sub><i>j</i></sub></span> is the sum of two elementwise products, and <span class="m"><i>h</i><sub><i>j</i></sub></span> is the product of <span class="m"><i>o</i></span> and <span class="m">tanh(<i>c</i><sub><i>j</i></sub>)</span>.</p>
+    <p>Last year's <a href="https://github.com/Andrian0s/ML4NLP1-2026-Tutorial-Notebooks/blob/main/tutorials_notebooks_in_class_2025/W07_lstm_computation_graph_exercise.pdf" target="_blank" rel="noopener">solution slide</a> (the last page) shows the same graph for vectors; you can ignore the state <span class="m"><i>s</i><sub><i>j</i></sub></span> at the end.</p>
+  </details>
+  <details>
+    <summary>Part 3</summary>
+    <p>On the path from <span class="m"><i>c</i><sub><i>j</i>−1</sub></span> to <span class="m"><i>c</i><sub><i>j</i></sub></span> there is only one elementwise multiplication by <span class="m"><i>f</i></span> and one addition: no tanh and no weight. Therefore, the gradient at <code>c</code> equals the value of <span class="m"><i>f</i></span> (0.79): in <span class="m"><i>c</i><sub><i>j</i></sub> = <i>f</i> · <i>c</i><sub><i>j</i>−1</sub> + <i>i</i> · <i>z</i></span>, only the first term depends on <span class="m"><i>c</i><sub><i>j</i>−1</sub></span>.</p>
+    <p>Over five steps, the gradient becomes <span class="m"><i>f</i><sup>5</sup></span>: 0.59 for <span class="m"><i>f</i> = 0.9</span>. With <span class="m"><i>f</i> = 1</span>, the gradient passes through unchanged, and with <span class="m"><i>f</i> = 0.5</span> it drops to 0.03. An LSTM therefore has to learn to keep <span class="m"><i>f</i></span> close to 1 for information it wants to remember, while the input gate <span class="m"><i>i</i></span> decides what is written into the cell. A forget gate close to 0 deliberately erases the memory, which can be useful, for example, at the start of a new sentence.</p>
+  </details>
+  <details>
+    <summary>Part 4</summary>
+    <p>After one step, the RNN gradient is 0.37, as in Part 1. After five steps, it is only <code>2.14e-3</code>, and after twenty steps <code>4.37e-12</code>, whereas the gradient along the cell state is still 0.59 and 0.12 (that is, <span class="m">0.9<sup>5</sup></span> and <span class="m">0.9<sup>20</sup></span>).</p>
+    <p>At every step, the RNN gradient is multiplied by <span class="m"><i>w</i><sup><i>h</i></sup></span> and by the derivative of tanh. This derivative is at most 1. With small weights, the product is small anyway; with large weights, the tanh saturates: the hidden state quickly gets close to 1 (about 0.99 for <code>wh=2</code>), so the derivative of tanh is close to 0. Either way, the gradient shrinks with every step: the largest value after twenty steps that you can reach is about <code>1.57e-11</code>, at <code>wh=0.7</code>.</p>
+    <p>For a simple RNN, this means that a word twenty positions earlier has almost no influence on the weight updates, and the model can hardly learn such long-range dependencies. If <span class="m"><i>w</i><sup><i>h</i></sup></span> times the derivative of tanh stays above 1, the gradient can explode instead.</p>
+    <p>Along the cell state, <span class="m"><i>f</i></span> has to be at least 0.9, since <span class="m">0.9<sup>20</sup> ≈ 0.12</span> but <span class="m">0.89<sup>20</sup> ≈ 0.097</span>. With a small <span class="m"><i>f</i></span>, the cell state loses the gradient just as quickly as the RNN: for <span class="m"><i>f</i> = 0.27</span>, only <code>4.24e-12</code> is left after twenty steps. The difference is that the LSTM learns its gates, so it can keep information when it is needed and erase it when it is not.</p>
+  </details>
+</section>
+
+<section>
+  <h2>Further reading</h2>
+  <p>Chris Olah's blog post <a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="noopener">Understanding LSTM Networks</a> explains the same ideas with very clear diagrams.</p>
+  <p>If you have any questions, please ask them in the OLAT forum.</p>
+</section>
+
+</main>
+
+<script>
+(function () {
+  var svg = document.getElementById('chart');
+  var tip = document.getElementById('tip');
+  var whIn = document.getElementById('wh'), fIn = document.getElementById('f');
+  var small = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;  // larger labels on phones
+  var W = 680, H = small ? 390 : 330, L = small ? 84 : 64, R = 128, T = 14, B = small ? 76 : 40;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  var N = 20, LOG_MIN = -15, LOG_MAX = 1;
+  var NS = 'http://www.w3.org/2000/svg';
+
+  // the RNN from Part 1, unrolled: x = 1, wx = 0.5, h0 = 0.1
+  function rnnGrads(wh) {
+    var h = 0.1, g = 1, out = [1];
+    for (var n = 1; n <= N; n++) {
+      h = Math.tanh(h * wh + 0.5);
+      g *= wh * (1 - h * h);
+      out.push(g);
+    }
+    return out;
+  }
+  function cellGrads(f) {
+    var out = [];
+    for (var n = 0; n <= N; n++) out.push(Math.pow(f, n));
+    return out;
+  }
+  function fmt(v) {
+    if (v === 0) return '0';
+    if (Math.abs(v) >= 0.01) return v.toFixed(2).replace(/\.?0+$/, '');
+    var p = v.toExponential(2).split('e');
+    return p[0].replace(/\.?0+$/, '') + 'e' + parseInt(p[1], 10);
+  }
+  function x(n) { return L + (W - L - R) * n / N; }
+  function y(v) {
+    var lv = Math.log10(Math.max(v, Math.pow(10, LOG_MIN - 1)));
+    return T + (H - T - B) * (LOG_MAX - lv) / (LOG_MAX - LOG_MIN);
+  }
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    (parent || svg).appendChild(e);
+    return e;
+  }
+  function tickLabel(p) {
+    if (p === 0) return '1';
+    if (p === -3) return '0.001';
+    return '1e' + p;
+  }
+
+  var defs = el('defs', {});
+  var clip = el('clipPath', { id: 'plot' }, defs);
+  el('rect', { x: L, y: T, width: W - L - R, height: H - T - B }, clip);
+
+  var grid = el('g', { 'class': 'grid' }), axis = el('g', { 'class': 'axis' });
+  for (var p = LOG_MAX - 1; p >= LOG_MIN; p -= 3) {
+    el('line', { x1: L, x2: W - R, y1: y(Math.pow(10, p)), y2: y(Math.pow(10, p)) }, grid);
+    el('text', { x: L - 8, y: y(Math.pow(10, p)) + 4, 'text-anchor': 'end' }, axis).textContent = tickLabel(p);
+  }
+  for (var n = 0; n <= N; n += 5) {
+    el('text', { x: x(n), y: H - B + (small ? 30 : 18), 'text-anchor': 'middle' }, axis).textContent = n;
+  }
+  el('text', { x: L + (W - L - R) / 2, y: H - 4, 'text-anchor': 'middle' }, axis).textContent = 'number of steps back';
+
+  var plot = el('g', { 'clip-path': 'url(#plot)' });
+  var rnnPath = el('path', { 'class': 'series', stroke: 'var(--rnn)' }, plot);
+  var cellPath = el('path', { 'class': 'series', stroke: 'var(--cell)' }, plot);
+  var rnnLabel = el('text', { 'class': 'end-label', fill: 'var(--ink)' });
+  var cellLabel = el('text', { 'class': 'end-label', fill: 'var(--ink)' });
+  var guide = el('line', { y1: T, y2: H - B, stroke: 'var(--ink-3)', 'stroke-dasharray': '3 3', visibility: 'hidden' });
+  var dotR = el('circle', { r: 4.5, fill: 'var(--rnn)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' });
+  var dotC = el('circle', { r: 4.5, fill: 'var(--cell)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' });
+  var hit = el('rect', { x: L, y: T, width: W - L - R, height: H - T - B, fill: 'transparent' });
+
+  var rnn = [], cell = [];
+  function d(vals) {
+    return vals.map(function (v, n) { return (n ? 'L' : 'M') + x(n).toFixed(1) + ' ' + y(v).toFixed(1); }).join(' ');
+  }
+  function placeLabel(label, vals, text) {
+    var last = vals[N];
+    var yy = Math.min(Math.max(y(last), T + 10), H - B - 4);
+    label.setAttribute('x', W - R + 8);
+    label.setAttribute('y', yy + 4);
+    label.textContent = text + (last < Math.pow(10, LOG_MIN) ? ' (below)' : '');
+    return yy;
+  }
+  function draw() {
+    var wh = parseFloat(whIn.value), f = parseFloat(fIn.value);
+    document.getElementById('whOut').textContent = wh.toFixed(1);
+    document.getElementById('fOut').textContent = f.toFixed(2);
+    rnn = rnnGrads(wh); cell = cellGrads(f);
+    rnnPath.setAttribute('d', d(rnn));
+    cellPath.setAttribute('d', d(cell));
+    var yr = placeLabel(rnnLabel, rnn, 'RNN'), yc = placeLabel(cellLabel, cell, 'LSTM');
+    if (Math.abs(yr - yc) < 16) {  // keep the two end labels apart
+      if (yr <= yc) rnnLabel.setAttribute('y', yc + 4 - 16); else cellLabel.setAttribute('y', yr + 4 - 16);
+    }
+    document.getElementById('readout').innerHTML =
+      'After 5 steps: RNN <b>' + fmt(rnn[5]) + '</b>, LSTM <b>' + fmt(cell[5]) + '</b>. ' +
+      'After 20 steps: RNN <b>' + fmt(rnn[20]) + '</b>, LSTM <b>' + fmt(cell[20]) + '</b>.';
+  }
+  function show(evt) {
+    var box = svg.getBoundingClientRect();
+    var px = (evt.clientX - box.left) * W / box.width;
+    var n = Math.max(0, Math.min(N, Math.round((px - L) / (W - L - R) * N)));
+    guide.setAttribute('x1', x(n)); guide.setAttribute('x2', x(n));
+    dotR.setAttribute('cx', x(n)); dotR.setAttribute('cy', y(rnn[n]));
+    dotC.setAttribute('cx', x(n)); dotC.setAttribute('cy', y(cell[n]));
+    [guide, dotR, dotC].forEach(function (e) { e.setAttribute('visibility', 'visible'); });
+    tip.innerHTML = n + ' steps back<br>RNN: <b>' + fmt(rnn[n]) + '</b><br>LSTM: <b>' + fmt(cell[n]) + '</b>';
+    tip.style.display = 'block';
+    var left = x(n) * box.width / W + 12;
+    if (left + tip.offsetWidth > box.width) left = x(n) * box.width / W - tip.offsetWidth - 12;
+    tip.style.left = left + 'px';
+    tip.style.top = (T * box.height / H + 4) + 'px';
+  }
+  function hide() {
+    [guide, dotR, dotC].forEach(function (e) { e.setAttribute('visibility', 'hidden'); });
+    tip.style.display = 'none';
+  }
+  hit.addEventListener('mousemove', show);
+  hit.addEventListener('mouseleave', hide);
+  hit.addEventListener('touchstart', function (e) { show(e.touches[0]); }, { passive: true });
+  hit.addEventListener('touchmove', function (e) { show(e.touches[0]); }, { passive: true });
+  whIn.addEventListener('input', draw);
+  fIn.addEventListener('input', draw);
+  draw();
+})();
+</script>
+</body>
+</html>
