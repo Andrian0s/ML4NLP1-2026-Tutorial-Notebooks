@@ -46,7 +46,7 @@ Building word embeddings with PyTorch. In this exercise, you will implement a Co
 Also known as Exercise AB. Handled through Simon Clematide. Please see OLAT Course for details.
 
 ### Exercise 04:
-Named Entity Recognition using Transformer Encoders. In this exercise, you will fine-tune a BERT model using the HuggingFace library. Additionally, you will experiment with GliNER to perform anonymization of texts. See the exercise sheet for more details: [Exercise 04](./exercises/ex4_old)
+Named Entity Recognition using Transformer Encoders. In this exercise, you will fine-tune a BERT model using the HuggingFace library and compare it with zero-shot NER using GLiNER. Additionally, you will use GLiNER to anonymise texts. See the exercise sheet for more details: [Exercise 04](./exercises/ex4)
 
 ### Exercise 05: 
 LLM Prompting, Prompt Engineering and small LLM fine-tuning using Unsloth AI. See the exercise sheet for more details: [Exercise 05](./exercises/ex5_old)
