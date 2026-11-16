@@ -49,7 +49,7 @@ Also known as Exercise AB. Handled through Simon Clematide. Please see OLAT Cour
 Named Entity Recognition using Transformer Encoders. In this exercise, you will fine-tune a BERT model using the HuggingFace library and compare it with zero-shot NER using GLiNER. Additionally, you will use GLiNER to anonymise texts. See the exercise sheet for more details: [Exercise 04](./exercises/ex4)
 
 ### Exercise 05: 
-LLM Prompting, Prompt Engineering and small LLM fine-tuning using Unsloth AI. See the exercise sheet for more details: [Exercise 05](./exercises/ex5_old)
+LLM Prompting and Fine-tuning with Decoder Models. In this exercise, you will compare a base LLM with its instruction-tuned version, experiment with zero-shot, few-shot and chain-of-thought prompting, fine-tune a small LLM with QLoRA using Unsloth, and validate structured outputs. See the exercise sheet for more details: [Exercise 05](./exercises/ex5)
 
 ### Exercise 06: 
 Topic Modeling using LDA and CTM. See the exercise sheet for more details: [Exercise 06](./exercises/ex6_old)
