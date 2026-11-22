@@ -25,7 +25,7 @@ In this repository, you will find the notebooks for the tutorials and exercises 
 - **Week 08**: Introduction to HuggingFace `transformers` and `datasets` — [W08_intro_to_hugging_face_transformers_datasets.ipynb](./tutorials_notebooks_in_class_2026/W08_intro_to_hugging_face_transformers_datasets.ipynb)
 - **Week 09**: Introduction to GLiNER and NuExtract — [W09_introduction_to_gliner_nuextract.ipynb](./tutorials_notebooks_in_class_2026/W09_introduction_to_gliner_nuextract.ipynb); slides: [W09_from_bert_to_gliner_slides.pdf](./tutorials_notebooks_in_class_2026/W09_from_bert_to_gliner_slides.pdf)
 - **Week 10**: Introduction to prompt engineering — [W10_introduction_to_prompt_engineering.ipynb](./tutorials_notebooks_in_class_2026/W10_introduction_to_prompt_engineering.ipynb); slides: [W10_introduction_to_prompt_engineering_2025.pdf](./tutorials_notebooks_in_class_2026/W10_introduction_to_prompt_engineering_2025.pdf) *(2025 version)*
-- **Week 11**: Strawberry Challenge, a prompt engineering competition — [W11_strawberry_challenge.ipynb](./tutorials_notebooks_in_class_2026/W11_strawberry_challenge.ipynb)
+- **Week 11**: Strawberry Challenge, a prompt engineering competition — [W11_strawberry_challenge.ipynb](./tutorials_notebooks_in_class_2026/W11_strawberry_challenge.ipynb); optional: picoGPT, GPT-2 in NumPy step by step — [W11_picoGPT.ipynb](./tutorials_notebooks_in_class_2026/W11_picoGPT.ipynb)
 - **Week 13**: Vector search with Qdrant — [W13_Qdrant_demo.ipynb](./tutorials_notebooks_in_class_2026/W13_Qdrant_demo.ipynb) *(2025 version)*
 - **Week 14**: Exam preparation — [W14 ML4NLP1-2025 - Exam Prep.pdf](./tutorials_notebooks_in_class_2026/W14%20ML4NLP1-2025%20-%20Exam%20Prep.pdf) *(2025 version)*
 
